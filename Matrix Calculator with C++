@@ -1,1 +1,237 @@
+#include <iostream>
+#include <cmath>
 
+using namespace std;
+int rA, rB, cA, cB;
+const int row = 20, column = 20;
+double Matrix_A[row][column];
+double Matrix_B[row][column];
+double Matrix_C[row][column];
+double Matrix_D[row][column];
+
+
+int deter(double matrix[row][column], int r) {
+    int u = 0;
+    double sub[row][column];
+    if (r == 1) {
+        u = matrix[0][0];
+    }
+    if (r == 2)
+        return ((matrix[0][0] * matrix[1][1]) - (matrix[1][0] * matrix[0][1]));
+    else {
+        for (int w = 0; w < r; w++) {
+            int si = 0;
+            for (int d = 1; d < r; d++) {
+                int sj = 0;
+                for (int t = 0; t < r; t++) {
+                    if (t == w)
+                        continue;
+                    sub[si][sj] = matrix[d][t];
+                    sj++;
+                }
+                si++;
+            }
+            u += (pow(-1, w) * matrix[0][w] * deter(sub, r - 1));
+        }
+    }
+    return u;
+}
+
+/**
+ * Calculates the determinant of a square matrix recursively using the Laplace expansion.
+ * @param matrix The matrix for which the determinant is calculated.
+ * @param r The number of rows/columns in the matrix.
+ * @return The determinant of the matrix.
+ */
+void inverseMatrix(double matrix[][column], double inverse[][column], int n) {
+// Augment the matrix with the identity matrix
+    double augmentedMatrix[column][2 * column];
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            augmentedMatrix[i][j] = matrix[i][j];
+        }
+        augmentedMatrix[i][i + n] = 1.0;
+    }
+
+// Apply Gauss-Jordan elimination
+    for (int i = 0; i < n; ++i) {
+        // Divide row i by matrix[i][i]
+        double divisor = augmentedMatrix[i][i];
+        for (int j = 0; j < 2 * n; ++j) {
+            augmentedMatrix[i][j] /= divisor;
+        }
+
+// Subtract multiples of row i from other rows to make their leading entry zero
+        for (int k = 0; k < n; ++k) {
+            if (k != i) {
+                double factor = augmentedMatrix[k][i];
+                for (int j = 0; j < 2 * n; ++j) {
+                    augmentedMatrix[k][j] -= factor * augmentedMatrix[i][j];
+                }
+            }
+        }
+    }
+
+// Extract the inverse matrix from the augmented matrix
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            inverse[i][j] = augmentedMatrix[i][j + n];
+        }
+    }
+}
+
+void input_Matrix(double Matrix[][column], int r, int c) {
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            cin >> Matrix[i][j];
+        }
+    }
+}
+
+/**
+ * Takes user input and populates a matrix.
+ * @param Matrix The matrix to be populated.
+ * @param r The number of rows in the matrix.
+ * @param c The number of columns in the matrix.
+ */
+
+void read_Matrix(double Matrix[][column], int r, int c) {
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            cout << Matrix[i][j] << "  ";
+        }
+        cout << "\n";
+    }
+}
+
+/**
+ * Prints the elements of a matrix.
+ * @param Matrix The matrix to be displayed.
+ * @param r The number of rows in the matrix.
+ * @param c The number of columns in the matrix.
+ */
+
+
+
+int main() {
+    int x = 0;
+
+    // Input dimensions of Matrix A
+    cout << "Please enter dimensions of Matrix A:" << "\n";
+    cin >> rA >> cA;
+
+    // Input dimensions of Matrix B
+    cout << "Please enter dimensions of Matrix B:" << "\n";
+    cin >> rB >> cB;
+
+    // Input values for Matrix A
+    cout << "Please enter values of Matrix A:\n";
+    input_Matrix(Matrix_A, rA, cA);
+
+    // Input values for Matrix B
+    cout << "Please enter values of Matrix B:\n";
+    input_Matrix(Matrix_B, rB, cB);
+
+    while (x < 7) {
+        // Choose operation type
+        cout << "Please choose operation type (1: A+B, 2: A-B, 3: AxB, 4: A/B, 5: |A|, 6: |B|, 7: quit):" << "\n";
+        cin >> x;
+        switch (x) {
+
+            case 1:
+                // Addition operation
+                if (rA == rB && cA == cB) {
+                    for (int i = 0; i < rA; i++) {
+                        for (int j = 0; j < cA; j++) {
+                            Matrix_C[i][j] = Matrix_A[i][j] + Matrix_B[i][j];
+                            cout << Matrix_C[i][j] << " ";
+                        }
+                        cout << "\n";
+                    }
+                } else {
+                    cout << "The operation you chose is invalid for the given matrices.\n";
+                }
+                break;
+
+            case 2:
+                // Subtraction operation
+                if (rA == rB && cA == cB) {
+                    for (int i = 0; i < rB; i++) {
+                        for (int j = 0; j < cB; j++) {
+                            Matrix_D[i][j] = Matrix_A[i][j] - Matrix_B[i][j];
+                            cout << Matrix_D[i][j] << " ";
+                        }
+                        cout << "\n";
+                    }
+                } else {
+                    cout << "The operation you chose is invalid for the given matrices.\n";
+                }
+                break;
+
+            case 3:
+                // Multiplication operation
+                if (cA != rB) {
+                    cout << "The operation you chose is invalid for the given matrices.\n";
+                } else {
+                    for (int i = 0; i < rA; i++) {
+                        for (int j = 0; j < cB; j++) {
+                            double sum = 0;
+                            for (int k = 0; k < cA; k++) {
+                                sum = sum + (Matrix_A[i][k] * Matrix_B[k][j]);
+                            }
+                            Matrix_C[i][j] = sum;
+                        }
+                    }
+                    read_Matrix(Matrix_C, rA, cB);
+                }
+                break;
+
+
+            case 4:
+                // Division operation
+                if (cA == rB && rB == cB && deter(Matrix_B, rB) != 0) {
+                    // Calculate the inverse of Matrix B
+                    inverseMatrix(Matrix_B, Matrix_C, rB);
+                    for (int i = 0; i < rA; i++) {
+                        for (int j = 0; j < cB; j++) {
+                            double sum = 0;
+                            for (int k = 0; k < cA; k++) {
+                                sum = sum + (Matrix_A[i][k] * Matrix_C[k][j]);
+                            }
+                            Matrix_D[i][j] = sum;
+                        }
+                    }
+                    read_Matrix(Matrix_D, rA, cB);
+                } else {
+                    cout << "The operation you chose is invalid for the given matrices.\n";
+                }
+                break;
+
+            case 5:
+                // Determinant of Matrix A
+                if (rA == cA) {
+                    cout << deter(Matrix_A, rA) << "\n";
+                } else {
+                    cout << "The operation you chose is invalid for the given matrices.\n";
+                }
+                break;
+
+            case 6:
+                // Determinant of Matrix B
+                if (rB == cB) {
+                    cout << deter(Matrix_B, rB) << "\n";
+                } else {
+                    cout << "The operation you chose is invalid for the given matrices.\n";
+                }
+                break;
+
+            case 7:
+                // Quit the program
+                cout << "Thank you!\n";
+                return 0;
+
+            default:
+                break;
+        }
+    }
+}
