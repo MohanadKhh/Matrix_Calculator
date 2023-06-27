@@ -1,7 +1,7 @@
 ## Matrix Calculator
 
 ## Download link
-https://github.com/MohanadKhh/Matrix_Calculator/releases/download/v0.1/Matrix.Calculator.zip.zip
+https://github.com/MohanadKhh/Matrix_Calculator/releases/download/v0.1/Matrix.Calculator.zip
 
 ## Description
 Matrix Calculator
