@@ -1,1 +1,132 @@
+public class MatrixOperations {
 
+    /**
+     * Performs matrix addition.
+     *
+     * @param matrix1 The first matrix.
+     * @param matrix2 The second matrix.
+     * @param rows    The number of rows in the matrices.
+     * @param columns The number of columns in the matrices.
+     * @return The result of matrix addition.
+     */
+    static double[][] addition(double[][] matrix1, double[][] matrix2, int rows, int columns) {
+        double[][] matrixResult = new double[rows][columns];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                matrixResult[i][j] = matrix1[i][j] + matrix2[i][j];
+            }
+        }
+        return matrixResult;
+    }
+
+    /**
+     * Performs matrix subtraction.
+     *
+     * @param matrix1 The first matrix.
+     * @param matrix2 The second matrix.
+     * @param rows    The number of rows in the matrices.
+     * @param columns The number of columns in the matrices.
+     * @return The result of matrix subtraction.
+     */
+    static double[][] subtract(double[][] matrix1, double[][] matrix2, int rows, int columns) {
+        double[][] matrixResult = new double[rows][columns];
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                matrixResult[i][j] = matrix1[i][j] - matrix2[i][j];
+            }
+        }
+        return matrixResult;
+    }
+
+    /**
+     * Performs matrix multiplication.
+     *
+     * @param matrix1  The first matrix.
+     * @param matrix2  The second matrix.
+     * @param rows1    The number of rows in the first matrix.
+     * @param columns1 The number of columns in the first matrix.
+     * @param rows2    The number of rows in the second matrix.
+     * @param columns2 The number of columns in the second matrix.
+     * @return The result of matrix multiplication.
+     */
+    static double[][] multiply(double[][] matrix1, double[][] matrix2, int rows1, int columns1, int rows2, int columns2) {
+        double[][] matrixResult = new double[rows1][columns2];
+        for (int i = 0; i < rows1; i++) {
+            for (int j = 0; j < columns2; j++) {
+                double sum = 0;
+                // Compute the dot product of the i-th row of matrix1 and the j-th column of matrix2
+                for (int k = 0; k < columns1; k++) {
+                    sum = sum + (matrix1[i][k] * matrix2[k][j]);
+                }
+                matrixResult[i][j] = sum;
+            }
+        }
+        return matrixResult;
+    }
+
+
+    static double deterMatrix(double[][] matrix, int r) {
+        double u = 0;
+        double[][] sub = new double[r - 1][r - 1]; // Adjust the size of the sub array
+
+        if (r == 1) {   // If the matrix is 1x1, return the single element as the determinant
+            u = matrix[0][0];
+        } else if (r == 2) {  // If the matrix is 2x2, return the determinant using the formula
+            return ((matrix[0][0] * matrix[1][1]) - (matrix[1][0] * matrix[0][1]));
+        } else {
+            for (int w = 0; w < r; w++) {
+                int si = 0;
+                for (int d = 1; d < r; d++) {
+                    int sj = 0;
+                    for (int t = 0; t < r; t++) {
+                        if (t == w) {
+                            continue;
+                        }
+                        sub[si][sj] = matrix[d][t]; // Create a sub-matrix by excluding the current row and column
+                        sj++;
+                    }
+                    si++;
+                }
+                // Recursively calculate the determinant of the sub-matrix and add it to the result
+                u += (Math.pow(-1, w) * matrix[0][w] * deterMatrix(sub, r - 1));
+            }
+        }
+        return u; // Return the determinant of the matrix
+    }
+
+    static double[][] inverseMatrix(double[][] matrixData) {
+        int n = matrixData.length; // Get the size of the matrix (assuming it's a square matrix)
+
+        // Augment the matrix with the identity matrix
+        double[][] augmentedMatrix = new double[n][2 * n];
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(matrixData[i], 0, augmentedMatrix[i], 0, n); // Copy the original matrix
+            augmentedMatrix[i][i + n] = 1; // Add 1's in the diagonal of the augmented matrix
+        }
+
+        // Perform Gauss-Jordan elimination
+        for (int i = 0; i < n; i++) {
+            double pivot = augmentedMatrix[i][i]; // Choose a pivot element
+
+            for (int j = 0; j < 2 * n; j++) {
+                augmentedMatrix[i][j] /= pivot; // Divide the pivot row by the pivot element
+            }
+
+            for (int k = 0; k < n; k++) {
+                if (k != i) {
+                    double factor = augmentedMatrix[k][i]; // Get the factor to eliminate the element in the current column
+                    for (int j = 0; j < 2 * n; j++) {
+                        augmentedMatrix[k][j] -= factor * augmentedMatrix[i][j]; // Subtract the factor times the pivot row from other rows
+                    }
+                }
+            }
+        }
+
+        // Extract the inverse matrix
+        double[][] inverseMatrix = new double[n][n];
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(augmentedMatrix[i], n, inverseMatrix[i], 0, n); // Extract the inverse matrix from the augmented matrix
+        }
+        return inverseMatrix; // Return the inverse matrix
+    }
+}
