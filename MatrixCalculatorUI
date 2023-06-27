@@ -1,1 +1,516 @@
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import javafx.scene.control.ScrollPane;
 
+
+public class MatrixCalculatorUI extends Application {
+    Scene scene1;
+    Scene scene2;
+    Scene scene3;
+    GridPane gridPane1;
+    GridPane gridPane2;
+    GridPane gridPane3;
+    TextField[][] txFieldMatrixA;
+    TextField[][] txFieldMatrixB;
+    int rowA;
+    int columnA;
+    int rowB;
+    int columnB;
+    double[][] matrixA;
+    double[][] matrixB;
+    double[][] matrixC;
+    double[][] matrixD;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public void start(Stage primaryStage) {
+
+        primaryStage.getIcons().add(new Image("Matrix theory.jpeg"));
+
+        /* ************
+         * SCENE 1
+         * ************
+         */
+
+// Create a new GridPane and set padding, horizontal gap, and vertical gap
+        gridPane1 = new GridPane();
+        gridPane1.setPadding(new Insets(15, 15, 15, 15));
+        gridPane1.setHgap(10);
+        gridPane1.setVgap(10);
+
+
+        Image backgroundImage = new Image("photo.jpg");
+
+        // Create a BackgroundImage with the loaded image
+        BackgroundImage backgroundImg = new BackgroundImage(backgroundImage,
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+
+        // Create a Background with the BackgroundImage
+        Background background = new Background(backgroundImg);
+        gridPane1.setBackground(background);
+
+// Create a label with text and set CSS properties for font weight and size
+        Label label = new Label("Please enter size of Matrix");
+        label.setStyle("-fx-font-weight: bold; -fx-font-size: 25px;");
+
+
+// Matrix A
+// Creation text fields and labels for Matrix A and set prompt texts and CSS properties
+        TextField txFieldRowA = new TextField();
+        txFieldRowA.setPromptText("no. of rows");
+        txFieldRowA.setStyle("-fx-prompt-text-fill: gray;");
+        TextField txFieldColumnA = new TextField();
+        txFieldColumnA.setPromptText("no. of columns");
+        txFieldColumnA.setStyle("-fx-prompt-text-fill: gray;");
+        Label labelRowA = new Label("Number of Rows of Matrix A");
+        Label labelColumnA = new Label("Number of Columns of Matrix A");
+
+
+// Matrix B
+// Creation text fields and labels for Matrix B and a label for warning message
+        TextField txFieldRowB = new TextField();
+        txFieldRowB.setPromptText("no. of rows");
+        txFieldRowB.setStyle("-fx-prompt-text-fill: gray;");
+        TextField txFieldColumnB = new TextField();
+        txFieldColumnB.setPromptText("no. of columns");
+        txFieldColumnB.setStyle("-fx-prompt-text-fill: gray;");
+        Label labelRowB = new Label("Number of Rows of Matrix B");
+        Label labelColumnB = new Label("Number of Columns of Matrix B");
+        Label labelWarning1 = new Label();
+
+
+        Button buttonDone = new Button("Done");
+        buttonDone.setPrefWidth(150);
+        buttonDone.setStyle("-fx-background-color: #b2defd; -fx-font-size: 13pt;");
+        buttonDone.setOnMouseEntered(event -> buttonDone.setStyle("-fx-background-color: #399ae7; -fx-font-size: 15pt;"));
+        buttonDone.setOnMouseExited(event -> buttonDone.setStyle("-fx-background-color: #b2defd; -fx-font-size: 13pt;"));
+// Create a button with text and set its preferred width and CSS properties
+// Set a mouse entered event handler to change the button's style when the mouse enters
+// Set an inline lambda expression to define the event handling logic
+
+// Add UI elements to the grid pane
+        gridPane1.add(label, 0, 0, 4, 1);
+        gridPane1.add(labelRowA, 0, 2);
+        gridPane1.add(txFieldRowA, 3, 2);
+        gridPane1.add(labelColumnA, 0, 3);
+        gridPane1.add(txFieldColumnA, 3, 3);
+        gridPane1.add(labelRowB, 0, 7);
+        gridPane1.add(txFieldRowB, 3, 7);
+        gridPane1.add(labelColumnB, 0, 8);
+        gridPane1.add(txFieldColumnB, 3, 8);
+        gridPane1.add(buttonDone, 3, 9);
+        gridPane1.add(labelWarning1, 3, 10, 2, 1);
+// Add labels, text fields, and the button to the grid pane at specific positions
+
+        gridPane1.setAlignment(Pos.CENTER);
+// Set the alignment of the grid pane to center
+
+        scene1 = new Scene(gridPane1, 1200, 700);
+// Create a new scene with the grid pane as its root and set its size
+
+        primaryStage.setScene(scene1);
+// Set the scene as the primary stage's scene
+
+        buttonDone.setOnAction(eDone -> {
+
+            /* ************
+             * SCENE 2
+             * ************
+             */
+
+            try {
+                rowA = Integer.parseInt(txFieldRowA.getText());
+                columnA = Integer.parseInt(txFieldColumnA.getText());
+                rowB = Integer.parseInt(txFieldRowB.getText());
+                columnB = Integer.parseInt(txFieldColumnB.getText());
+
+                if (rowA > 0 && rowA <= 20 && columnA > 0 && columnA <= 20 && rowB > 0 && rowB <= 20 && columnB > 0 && columnB <= 20) {
+
+                    gridPane2 = new GridPane();
+                    gridPane2.setVgap(10);
+                    gridPane2.setHgap(10);
+                    gridPane2.setPadding(new Insets(30, 10, 10, 10));
+                    // Set the background
+                    gridPane2.setBackground(background);
+
+                    Label labelMatrixA = new Label("Enter values of Matrix A...");
+                    labelMatrixA.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;"); // Set CSS properties
+                    gridPane2.add(labelMatrixA, 0, 0);
+
+                    txFieldMatrixA = new TextField[rowA][columnA];
+                    for (int i = 0; i < rowA; i++) {
+                        for (int j = 0; j < columnA; j++) {
+                            txFieldMatrixA[i][j] = new TextField();
+                            txFieldMatrixA[i][j].setPrefSize(55, 20);
+                            gridPane2.add(txFieldMatrixA[i][j], j + 1, i + 1);
+                        }
+                    }
+                    Label labelMatrixB = new Label("Enter values of Matrix B...");
+                    labelMatrixB.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;"); // Set CSS properties
+                    gridPane2.add(labelMatrixB, 0, rowA + 3);
+
+                    txFieldMatrixB = new TextField[rowB][columnB];
+                    for (int i = 0; i < rowB; i++) {
+                        for (int j = 0; j < columnB; j++) {
+                            txFieldMatrixB[i][j] = new TextField();
+                            txFieldMatrixB[i][j].setPrefSize(55, 20);
+                            gridPane2.add(txFieldMatrixB[i][j], j + 1, i + 4 + rowA);
+                        }
+                    }
+
+//All Operations we can execute to make user choose from them
+                    Label labelChooseOP = new Label("Please, Choose Operation you want...");
+                    labelChooseOP.setStyle("-fx-font-weight: bold; -fx-font-size: 15px;"); // Set CSS properties
+                    gridPane2.add(labelChooseOP, 0, rowA + rowB + 7);
+
+                    ToggleGroup toggleGroup = new ToggleGroup();
+
+                    RadioButton addition = new RadioButton("Addition");
+                    addition.setStyle("-fx-font-size: 13px;");
+                    addition.setToggleGroup(toggleGroup);
+                    gridPane2.add(addition, 0, rowA + rowB + 8);
+
+                    RadioButton subtractionAB = new RadioButton("Subtract Matrix A to Matrix B (A - B)");
+                    subtractionAB.setStyle("-fx-font-size: 13px;");
+                    subtractionAB.setToggleGroup(toggleGroup);
+                    gridPane2.add(subtractionAB, 0, rowA + rowB + 9);
+
+                    RadioButton subtractionBA = new RadioButton("Subtract Matrix B to Matrix A (B - A)");
+                    subtractionBA.setStyle("-fx-font-size: 13px;");
+                    subtractionBA.setToggleGroup(toggleGroup);
+                    gridPane2.add(subtractionBA, 0, rowA + rowB + 10);
+
+                    RadioButton multiplicationAB = new RadioButton("Multiply Matrix A to Matrix B (A * B)");
+                    multiplicationAB.setStyle("-fx-font-size: 13px;");
+                    multiplicationAB.setToggleGroup(toggleGroup);
+                    gridPane2.add(multiplicationAB, 0, rowA + rowB + 11);
+
+                    RadioButton multiplicationBA = new RadioButton("Multiply Matrix B to Matrix A (B * A)");
+                    multiplicationBA.setStyle("-fx-font-size: 13px;");
+                    multiplicationBA.setToggleGroup(toggleGroup);
+                    gridPane2.add(multiplicationBA, 0, rowA + rowB + 12);
+
+                    RadioButton divisionAB = new RadioButton("Divide Matrix A to Matrix B (A / B)");
+                    divisionAB.setStyle("-fx-font-size: 13px;");
+                    divisionAB.setToggleGroup(toggleGroup);
+                    gridPane2.add(divisionAB, 0, rowA + rowB + 13);
+
+                    RadioButton divisionBA = new RadioButton("Divide Matrix B to Matrix A (B / A)");
+                    divisionBA.setStyle("-fx-font-size: 13px;");
+                    divisionBA.setToggleGroup(toggleGroup);
+                    gridPane2.add(divisionBA, 0, rowA + rowB + 14);
+
+                    RadioButton inverseA = new RadioButton("Inverse of Matrix A");
+                    inverseA.setStyle("-fx-font-size: 13px;");
+                    inverseA.setToggleGroup(toggleGroup);
+                    gridPane2.add(inverseA, 0, rowA + rowB + 15);
+
+                    RadioButton inverseB = new RadioButton("Inverse of Matrix B");
+                    inverseB.setStyle("-fx-font-size: 13px;");
+                    inverseB.setToggleGroup(toggleGroup);
+                    gridPane2.add(inverseB, 0, rowA + rowB + 16);
+
+                    RadioButton determinantA = new RadioButton("Determinant of Matrix A");
+                    determinantA.setStyle("-fx-font-size: 13px;");
+                    determinantA.setToggleGroup(toggleGroup);
+                    gridPane2.add(determinantA, 0, rowA + rowB + 17);
+
+                    RadioButton determinantB = new RadioButton("Determinant of Matrix B");
+                    determinantB.setStyle("-fx-font-size: 13px;");
+                    determinantB.setToggleGroup(toggleGroup);
+                    gridPane2.add(determinantB, 0, rowA + rowB + 18);
+
+//Calculate button & Back button & Label (rules & notes that cause error)
+                    Button buttonCalculate = new Button("Calculate");
+                    gridPane2.add(buttonCalculate, 8, rowA + rowB + 9, 4, 2);
+                    buttonCalculate.setPrefWidth(200);
+                    buttonCalculate.setStyle("-fx-background-color: #b2defd; -fx-font-size: 15pt;");
+                    buttonCalculate.setOnMouseEntered(event -> buttonCalculate.setStyle("-fx-background-color: #399ae7; -fx-font-size: 17pt;"));
+// Add mouse exit event handler
+                    buttonCalculate.setOnMouseExited(event -> buttonCalculate.setStyle("-fx-background-color: #b2defd; -fx-font-size: 15pt;"));
+
+                    Label labelWarning2 = new Label();
+                    labelWarning2.setStyle("-fx-font-size: 13px;");
+                    gridPane2.add(labelWarning2, 8, rowA + rowB + 10, 15, 5);
+
+                    Button buttonBack1 = new Button("Back");
+                    buttonBack1.setOnAction(eBack -> primaryStage.setScene(scene1));
+                    gridPane2.add(buttonBack1, 8, rowA + rowB + 15, 4, 2);
+                    buttonBack1.setPrefWidth(200);
+                    buttonBack1.setStyle("-fx-background-color: #b2defd; -fx-font-size: 13pt;");
+                    buttonBack1.setOnMouseEntered(event -> buttonBack1.setStyle("-fx-background-color: #399ae7; -fx-font-size: 15pt;"));
+// Add mouse exit event handler
+                    buttonBack1.setOnMouseExited(event -> buttonBack1.setStyle("-fx-background-color: #b2defd; -fx-font-size: 13pt;"));
+
+                    gridPane2.setAlignment(Pos.TOP_CENTER);
+                    ScrollPane scrollPane2 = new ScrollPane();
+                    scrollPane2.setPrefSize(1200, 700);
+                    scrollPane2.setContent(gridPane2);
+
+// Set the alignment of the GridPane in the ScrollPane
+                    scrollPane2.setFitToWidth(true);
+                    scrollPane2.setFitToHeight(true);
+
+// Center the GridPane within the ScrollPane
+                    scrollPane2.setVvalue(0.5);
+                    scrollPane2.setHvalue(0.5);
+                    scrollPane2.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+                    scrollPane2.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+
+                    scene2 = new Scene(scrollPane2);
+                    primaryStage.setScene(scene2);
+
+
+                    /* ************
+                     * SCENE 3
+                     * ************
+                     */
+
+                    buttonCalculate.setOnAction(eCal -> {
+                        try {
+
+                            gridPane3 = new GridPane();
+                            gridPane3.setVgap(10);
+                            gridPane3.setHgap(20);
+                            gridPane3.setPadding(new Insets(10, 10, 10, 10));
+                            // Set the background
+                            gridPane3.setBackground(background);
+
+                            Label labelOutput = new Label("The Result:");
+                            labelOutput.setStyle("-fx-font-weight: bold; -fx-font-size: 25px;"); // Set CSS properties
+                            gridPane3.add(labelOutput, 0, 0, 23, 1);
+
+
+                            Button buttonBack2 = new Button("Back");
+                            gridPane3.add(buttonBack2, 0, 24, 23, 1);
+                            buttonBack2.setOnAction(eBack -> primaryStage.setScene(scene2));
+                            buttonBack2.setPrefWidth(100);
+                            buttonBack2.setStyle("-fx-background-color: #b2defd; -fx-font-size: 10pt;");
+                            buttonBack2.setOnMouseEntered(event -> buttonBack2.setStyle("-fx-background-color: #399ae7; -fx-font-size: 12pt;"));
+// Add mouse exit event handler
+                            buttonBack2.setOnMouseExited(event -> buttonBack2.setStyle("-fx-background-color: #b2defd; -fx-font-size: 10pt;"));
+
+                            Button buttonAgain = new Button("Input new Matrices");
+                            gridPane3.add(buttonAgain, 3, 23, 23, 1);
+                            buttonAgain.setOnAction(eAgain -> primaryStage.setScene(scene1));
+                            buttonAgain.setPrefWidth(400);
+                            buttonAgain.setStyle("-fx-background-color: #b2defd; -fx-font-size: 10pt;");
+                            buttonAgain.setOnMouseEntered(event -> buttonAgain.setStyle("-fx-background-color: #399ae7; -fx-font-size: 12pt;"));
+// Add mouse exit event handler
+                            buttonAgain.setOnMouseExited(event -> buttonAgain.setStyle("-fx-background-color: #b2defd; -fx-font-size: 10pt;"));
+
+                            Button buttonExit = new Button("Exit");
+                            gridPane3.add(buttonExit, 22, 24);
+                            buttonExit.setOnAction(eExit -> primaryStage.close());
+                            buttonExit.setPrefWidth(100);
+                            buttonExit.setStyle("-fx-background-color: #b2defd; -fx-font-size: 10pt;");
+                            buttonExit.setOnMouseEntered(event -> buttonExit.setStyle("-fx-background-color: #399ae7; -fx-font-size: 12pt;"));
+// Add mouse exit event handler
+                            buttonExit.setOnMouseExited(event -> buttonExit.setStyle("-fx-background-color: #b2defd; -fx-font-size: 10pt;"));
+
+                            gridPane3.setAlignment(Pos.TOP_CENTER);
+                            ScrollPane scrollPane3 = new ScrollPane();
+                            scrollPane3.setPrefSize(1200, 700);
+                            scrollPane3.setContent(gridPane3);
+
+// Set the alignment of the GridPane in the ScrollPane
+                            scrollPane3.setFitToWidth(true);
+                            scrollPane3.setFitToHeight(true);
+
+// Center the GridPane within the ScrollPane
+                            scrollPane3.setVvalue(0.5);
+                            scrollPane3.setHvalue(0.5);
+                            scrollPane3.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+                            scrollPane3.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+                            scene3 = new Scene(scrollPane3);
+
+
+                            matrixA = new double[rowA][columnA];
+                            for (int i = 0; i < rowA; i++) {
+                                for (int j = 0; j < columnA; j++) {
+                                    matrixA[i][j] = Double.parseDouble(txFieldMatrixA[i][j].getText());
+                                }
+                            }
+
+                            matrixB = new double[rowB][columnB];
+                            for (int i = 0; i < rowB; i++) {
+                                for (int j = 0; j < columnB; j++) {
+                                    matrixB[i][j] = Double.parseDouble(txFieldMatrixB[i][j].getText());
+                                }
+                            }
+
+
+                            if (addition.isSelected()) {
+                                if (rowA == rowB && columnA == columnB) {
+                                    matrixC = new double[rowB][columnB];
+                                    matrixC = MatrixOperations.addition(matrixA, matrixB, rowA, columnA);
+                                    readMatrix(matrixC, rowA, columnA);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Addition to these two matrices\n" +
+                                            "Note: To Add two matrices their sizes must be equal...");
+
+
+                            } else if (subtractionAB.isSelected()) {
+                                if (rowA == rowB && columnA == columnB) {
+                                    matrixC = new double[rowB][columnB];
+                                    matrixC = MatrixOperations.subtract(matrixA, matrixB, rowA, columnA);
+                                    readMatrix(matrixC, rowA, columnA);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Subtraction to these two matrices\n" +
+                                            "Note: To Subtract two matrices their sizes must be equal...");
+
+
+                            } else if (subtractionBA.isSelected()) {
+                                if (rowA == rowB && columnA == columnB) {
+                                    matrixC = new double[rowB][columnB];
+                                    matrixC = MatrixOperations.subtract(matrixB, matrixA, rowA, columnA);
+                                    readMatrix(matrixC, rowA, columnA);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Subtraction to these two matrices\n" +
+                                            "Note: To Subtract two matrices their sizes must be equal...");
+
+
+                            } else if (multiplicationAB.isSelected()) {
+                                if (columnA == rowB) {
+                                    matrixC = new double[rowA][columnB];
+                                    matrixC = MatrixOperations.multiply(matrixA, matrixB, rowA, columnA, rowB, columnB);
+                                    readMatrix(matrixC, rowA, columnB);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Multiply Matrix A to Matrix B\n" +
+                                            "Note: No. of columns of matrix A must be equal No. of rows of Matrix B...");
+
+
+                            } else if (multiplicationBA.isSelected()) {
+                                if (columnB == rowA) {
+                                    matrixC = new double[rowB][columnA];
+                                    matrixC = MatrixOperations.multiply(matrixB, matrixA, rowB, columnB, rowA, columnA);
+                                    readMatrix(matrixC, rowB, columnA);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Multiply Matrix B to Matrix A\n" +
+                                            "Note: No. of columns of matrix B must be equal No. of rows of Matrix A...");
+
+
+                            } else if (divisionAB.isSelected()) {
+                                if (columnA == rowB && rowB == columnB && MatrixOperations.deterMatrix(matrixB, rowB) != 0) {
+                                    matrixC = new double[rowB][columnB];
+                                    matrixC = MatrixOperations.inverseMatrix(matrixB);
+                                    matrixD = new double[rowA][columnB];
+                                    matrixD = MatrixOperations.multiply(matrixA, matrixC, rowA, columnA, rowB, columnB);
+                                    readMatrix(matrixD, rowA, columnB);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Division to these two matrices...\n" +
+                                            "Note: To Divide Matrix A to Matrix B\n" +
+                                            "      1) The matrix B must having inverse (not Singular Matrix).\n" +
+                                            "      2) No. of columns of matrix A must be equal no. of rows of Matrix B.\n" +
+                                            "      3) Matrix B must be square & its determinant not equal zero.\n");
+
+
+                            } else if (divisionBA.isSelected()) {
+                                if (columnB == rowA && rowA == columnA && MatrixOperations.deterMatrix(matrixA, rowA) != 0) {
+                                    matrixC = new double[rowA][columnA];
+                                    matrixC = MatrixOperations.inverseMatrix(matrixA);
+                                    matrixD = new double[rowB][columnA];
+                                    matrixD = MatrixOperations.multiply(matrixB, matrixC, rowB, columnB, rowA, columnA);
+                                    readMatrix(matrixD, rowB, columnA);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Division to these two matrices...\n" +
+                                            "Note: To Divide Matrix B to Matrix A\n" +
+                                            "      1) The matrix A must having inverse (not Singular Matrix).\n" +
+                                            "      2) No. of columns of matrix B must be equal no. of rows of Matrix A.\n" +
+                                            "      3) Matrix A must be square & its determinant not equal zero.\n");
+
+
+                            } else if (inverseA.isSelected()) {
+                                if (rowA == columnA && MatrixOperations.deterMatrix(matrixA, rowA) != 0) {
+                                    matrixC = new double[rowA][columnA];
+                                    matrixC = MatrixOperations.inverseMatrix(matrixA);
+                                    readMatrix(matrixC, rowA, columnA);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Inverse to this matrix\n" +
+                                            "Note: Matrix must be square and its determinant not equal zero (Singular Matrix)...");
+
+
+                            } else if (inverseB.isSelected()) {
+                                if (rowB == columnB && MatrixOperations.deterMatrix(matrixB, rowB) != 0) {
+                                    matrixC = new double[rowB][columnB];
+                                    matrixC = MatrixOperations.inverseMatrix(matrixB);
+                                    readMatrix(matrixC, rowB, columnB);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't make Inverse to this matrix\n" +
+                                            "Note: Matrix must be square and its determinant not equal zero (Singular Matrix)...");
+
+
+                            } else if (determinantA.isSelected()) {
+                                if (rowA == columnA) {
+                                    Label lDet = new Label(String.valueOf(MatrixOperations.deterMatrix(matrixA, rowA)));
+                                    gridPane3.add(lDet, 0, 1);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't calculate Determinant of Matrix\n" +
+                                            "Note: Matrix's rows and columns must be equal (Square Matrix)...");
+
+
+                            } else if (determinantB.isSelected()) {
+                                if (rowB == columnB) {
+                                    Label lDet = new Label(String.valueOf(MatrixOperations.deterMatrix(matrixB, rowB)));
+                                    gridPane3.add(lDet, 0, 1);
+                                    primaryStage.setScene(scene3);
+                                } else
+                                    labelWarning2.setText("Ops Error !! - Can't calculate Determinant of Matrix\n" +
+                                            "Note: Matrix's rows and columns must be equal (Square Matrix)...");
+
+
+                            } else
+                                labelWarning2.setText("Please, Choose the operation you want...");
+
+
+                        } catch (NumberFormatException ex) {
+                            labelWarning2.setText("Please, Enter all valid values of matrices");
+                        }
+                    });
+
+
+                } else
+                    labelWarning1.setText("Please, Enter valid number for size of the Matrix\n" + "Note: Size of Matrix must be between 1 ~ 20");
+            } catch (NumberFormatException exx) {
+                labelWarning1.setText("Please, Enter valid size of the Matrix");
+            }
+        });
+
+        primaryStage.setTitle("Matrix Calculator");
+        primaryStage.show();
+    }
+
+    void readMatrix(double[][] matrix, int rows, int columns) {
+        for (int i = 0; i < rows; i++) { // Loop through each row of the matrix
+            for (int j = 0; j < columns; j++) { // Loop through each column of the matrix
+// Create a Label for each element in the result matrix
+                Label label = new Label(String.valueOf(matrix[i][j]));
+
+// Add the Label to the GridPane at the corresponding row and column
+                gridPane3.add(label, j, i + 2);
+            }
+        }
+    }
+}
